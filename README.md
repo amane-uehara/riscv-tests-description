@@ -1,9 +1,11 @@
-# riscv-tests-usage
+# riscv-tests の内部構造について
 
 <https://github.com/riscv-software-src/riscv-tests/>
 
 の内部構造を追跡していたのでメモを残しておく。
+
 以下では`rv32ui`の加算命令のテストがどのように動くか見ていく。
+仮想メモリは使用せず、コア数は1個で、割込が入らない状況を考える。
 
 # テストコードの呼び出し部分
 
@@ -21,9 +23,18 @@
 #include "../rv64ui/add.S"
 ```
 
-`riscv_test.h`と`../rv64ui/add.S`の2つのファイルが読み込まれている。
-加算命令のテストは`rv64ui`版と共通のようだ。
-このファイルを今から見ていく。
+`include`可能な`riscv_test.h`は以下の4種類が存在し、riscv-testsインストール時の`--prefix`で指定できる。
+
+記号 | 説明 | URL
+--- | --- | ---
+`p`  | 仮想メモリ無し、コア1個、割込無し | <https://github.com/riscv/riscv-test-env/blob/81e58d0068858978c2415ae115144078434ea31d/p/riscv_test.h>
+`pm` | 仮想メモリ無し、複数コア | <https://github.com/riscv/riscv-test-env/blob/81e58d0068858978c2415ae115144078434ea31d/pm/riscv_test.h>
+`pt` | 仮想メモリ無し、タイマー割込有り | <https://github.com/riscv/riscv-test-env/blob/81e58d0068858978c2415ae115144078434ea31d/pt/riscv_test.h>
+`pv` | 仮想メモリ有り | <https://github.com/riscv/riscv-test-env/blob/81e58d0068858978c2415ae115144078434ea31d/pv/riscv_test.h>
+
+以下では仮想メモリ無し、コア1個、割込無しの`p/riscv_test.h`を考える。
+
+`../rv64ui/add.S`はテストコードの本体であり、以下で見ていく。
 
 ### `riscv-tests/isa/rv64ui/add.S`
 
@@ -340,6 +351,14 @@ pass:
   li a0, 0
   ecall
 ```
+
+# リンク後のコード
+
+以下のリンカスクリプトでリンクされる。
+
+<https://github.com/riscv/riscv-test-env/blob/0666378f353599d01fc48562b431b1dd049faab5/p/link.ld>
+
+通常のriscvのバイナリと同様に、開始アドレスが`0x80000000`になっている。
 
 テストの種類を追加し、レジスタ名の形式を統一し、定数を畳み込んで整理すると
 
