@@ -11,7 +11,7 @@
 
 表面部分から順番に掘り下げて見ていく。
 
-### `riscv-tests/isa/rv32ui/add.S`
+### `isa/rv32ui/add.S`
 
 <https://github.com/riscv-software-src/riscv-tests/blob/e65ecdf941a5484af27f9be223fb655ebcb0398b/isa/rv32ui/add.S>
 
@@ -34,9 +34,10 @@
 
 以下では仮想メモリ無し、コア1個、割込無しの`p/riscv_test.h`を考える。
 
-`../rv64ui/add.S`はテストコードの本体であり、以下で見ていく。
+`../rv64ui/add.S`はテストコードの本体であり、`rv64`版と共通化されている。
+以下で詳細を見ていく。
 
-### `riscv-tests/isa/rv64ui/add.S`
+### `isa/rv64ui/add.S`
 
 <https://github.com/riscv-software-src/riscv-tests/blob/e65ecdf941a5484af27f9be223fb655ebcb0398b/isa/rv64ui/add.S>
 
@@ -80,7 +81,7 @@ TEST_PASSFAIL
 
 これらを順番に見ていく。
 
-# テストの実行
+# テストの実行処理
 
 まずテストの実行部分を見ていく。
 
@@ -142,9 +143,9 @@ test_4:
 
 残りの不明箇所は
 
-* 大文字の`TESTNUM`の定義 (`gp`レジスタ)
-* `MASK_XLEN`マクロの定義 (`rv32ui`では意味を持たない)
-* `fail`とは何か (テスト失敗時に実行されるコードのアドレス)
+* 大文字の`TESTNUM`の定義 (実は`gp`レジスタ)
+* `MASK_XLEN`マクロの定義 (実は`rv32ui`では意味を持たない)
+* `fail`とは何か (実はテスト失敗時に実行されるコードのアドレス)
 
 この三点を見ていく。
 
